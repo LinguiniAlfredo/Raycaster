@@ -15,6 +15,43 @@ void drawPlayer() {
 	glEnd();
 }
 
+int mapX=8, mapY=8, mapS=64;
+int map[] = {
+    1,1,1,1,1,1,1,1,
+    1,0,0,1,0,0,0,1,
+    1,0,0,1,0,0,0,1,
+    1,0,0,0,0,0,0,1,
+    1,0,0,0,0,0,0,1,
+    1,0,0,0,0,1,0,1,
+    1,0,0,0,0,0,0,1,
+    1,1,1,1,1,1,1,1,
+};
+
+void drawMap2D() {
+    int x, y, xOffset, yOffset;
+    for (x=0; x < mapX; x++) {
+        for (y=0; y < mapY; y++) {
+
+            if (map[y * mapX + x] == 1) {
+                glColor3f(1,1,1);
+            } else {
+                glColor3f(0,0,0);
+            }
+
+            xOffset = x * mapS;
+            yOffset = y * mapS;
+
+            glBegin(GL_QUADS);
+            glVertex2i(xOffset + 1, yOffset + 1);
+            glVertex2i(xOffset + 1, yOffset + mapS - 1);
+            glVertex2i(xOffset + mapS - 1, yOffset + mapS - 1);
+            glVertex2i(xOffset + mapS - 1, yOffset + 1);
+            glEnd();
+        }
+    }
+    
+}
+
 void controls(unsigned char key, int x, int y) {
 	if(key=='w') {
 		playerY -= 5;
@@ -33,6 +70,7 @@ void controls(unsigned char key, int x, int y) {
 
 void display() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    drawMap2D();
 	drawPlayer();
 	glutSwapBuffers();
 }
