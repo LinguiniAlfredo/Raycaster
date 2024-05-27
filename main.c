@@ -8,20 +8,20 @@
 const int WIDTH = 1024;
 const int HEIGHT = 512;
 
-float px, py, pdx, pdy, pa;
+float playerX, playerY, playerDeltaX, playerDeltaY, playerAngle;
 
 
 void drawPlayer() {
 	glColor3f(1,1,0);
 	glPointSize(8);
 	glBegin(GL_POINTS);
-	glVertex2i(px, py);
+	glVertex2i(playerX, playerY);
 	glEnd();
 
     glLineWidth(3);
     glBegin(GL_LINES);
-    glVertex2i(px, py);
-    glVertex2i(px + pdx * 5, py + pdy * 5);
+    glVertex2i(playerX, playerY);
+    glVertex2i(playerX + playerDeltaX * 5, playerY + playerDeltaY * 5);
     glEnd();
 }
 
@@ -61,28 +61,34 @@ void drawMap2D() {
     }
 }
 
+void drawRays3D()
+{
+    int r, mx, my, mp, dof;
+    float rx, ry, ra, xo, yo;
+}
+
 void controls(unsigned char key, int x, int y) {
 	if(key=='a') {
-        pa -= 0.1;
-        if (pa < 0) {
-            pa += 2 * PI;
+        playerAngle -= 0.1;
+        if (playerAngle < 0) {
+            playerAngle += 2 * PI;
         }
-        pdx = cos(pa) * 5;
-        pdy = sin(pa) * 5;
+        playerDeltaX = cos(playerAngle) * 5;
+        playerDeltaY = sin(playerAngle) * 5;
 	}
 	if(key=='d'){
-        pa += 0.1;
-        if (pa < 0) {
-            pa -= 2 * PI;
+        playerAngle += 0.1;
+        if (playerAngle < 0) {
+            playerAngle -= 2 * PI;
         }
-        pdx = cos(pa) * 5;
-        pdy = sin(pa) * 5;
+        playerDeltaX = cos(playerAngle) * 5;
+        playerDeltaY = sin(playerAngle) * 5;
 	}
 	if(key=='w'){
-        px += pdx; py += pdy;
+        playerX += playerDeltaX; playerY += playerDeltaY;
 	}
 	if(key=='s'){
-        px -= pdx; py -= pdy;
+        playerX -= playerDeltaX; playerY -= playerDeltaY;
 	}
 	glutPostRedisplay();
 }
@@ -97,10 +103,10 @@ void display() {
 void init() {
 	glClearColor(0.3, 0.3, 0.3, 0);
 	gluOrtho2D(0, 1024, 512, 0);
-	px = 300; 
-	py = 300;
-    pdx = cos(pa) * 5;
-    pdy = sin(pa) * 5;
+	playerX = 300; 
+	playerY = 300;
+    playerDeltaX = cos(playerAngle) * 5;
+    playerDeltaY = sin(playerAngle) * 5;
 }
 
 int main(int argc, char* argv[]) {
