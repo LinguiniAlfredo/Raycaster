@@ -1,18 +1,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <GL/glut.h>
+#include <math.h>
+
+#define PI 3.1415926535
 
 const int WIDTH = 1024;
 const int HEIGHT = 512;
 
-float playerX, playerY;
+float px, py, pdx, pdy, pa;
+
 
 void drawPlayer() {
 	glColor3f(1,1,0);
 	glPointSize(8);
 	glBegin(GL_POINTS);
-	glVertex2i(playerX, playerY);
+	glVertex2i(px, py);
 	glEnd();
+
+    glLineWidth(3);
+    glBegin(GL_LINES);
+    glVertex2i(px, py);
+    glVertex2i(px + pdx * 5, py + pdy * 5);
+    glEnd();
 }
 
 int mapX=8, mapY=8, mapS=64;
@@ -49,21 +59,30 @@ void drawMap2D() {
             glEnd();
         }
     }
-    
 }
 
 void controls(unsigned char key, int x, int y) {
-	if(key=='w') {
-		playerY -= 5;
-	}
-	if(key=='a'){
-		playerX -= 5;
-	}
-	if(key=='s'){
-		playerY += 5;
+	if(key=='a') {
+        pa -= 0.1;
+        if (pa < 0) {
+            pa += 2 * PI;
+        }
+        pdx = cos(pa) * 5;
+        pdy = sin(pa) * 5;
 	}
 	if(key=='d'){
-		playerX += 5;
+        pa += 0.1;
+        if (pa < 0) {
+            pa -= 2 * PI;
+        }
+        pdx = cos(pa) * 5;
+        pdy = sin(pa) * 5;
+	}
+	if(key=='w'){
+        px += pdx; py += pdy;
+	}
+	if(key=='s'){
+        px -= pdx; py -= pdy;
 	}
 	glutPostRedisplay();
 }
@@ -78,15 +97,17 @@ void display() {
 void init() {
 	glClearColor(0.3, 0.3, 0.3, 0);
 	gluOrtho2D(0, 1024, 512, 0);
-	playerX = 300; 
-	playerY = 300;
+	px = 300; 
+	py = 300;
+    pdx = cos(pa) * 5;
+    pdy = sin(pa) * 5;
 }
 
 int main(int argc, char* argv[]) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowSize(WIDTH, HEIGHT);
-	glutCreateWindow("raycast test");
+	glutCreateWindow("raycaster");
 	init();
 	glutDisplayFunc(display);
 	glutKeyboardFunc(controls);
