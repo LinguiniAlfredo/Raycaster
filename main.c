@@ -63,8 +63,54 @@ void drawMap2D() {
 
 void drawRays3D()
 {
-    int r, mx, my, mp, dof;
-    float rx, ry, ra, xo, yo;
+    int ray, mx, my, mp, depthOfField;
+    float rayX, rayY, rayAngle, xOffset, yOffset;
+    rayAngle = playerAngle;
+
+    // Check horizontal line intersection
+    for (ray = 0; ray < 1; ray++) {
+        depthOfField = 0;
+        float aTan = -1 / tan(rayAngle);
+        // looking up
+        if (ray > PI) {
+            rayY = (((int) playerY >> 6) << 6) - 0.0001;
+            rayX = (playerY - rayY) * aTan + playerX;
+            yOffset = -64; 
+            xOffset = -yOffset * aTan;
+        }
+        // looking down
+        if (ray < PI) {
+            rayY = (((int) playerY >> 6) << 6) + 64;
+            rayX = (playerY - rayY) * aTan + playerX;
+            yOffset = 64; 
+            xOffset = -yOffset * aTan;
+        }
+        // looking left or right
+        if (rayAngle == 0 || rayAngle == PI) {
+            rayX = playerX;
+            rayY = playerY;
+            depthOfField = 8;
+        }
+        while (depthOfField < 8) {
+            mx = (int) rayX >> 6;
+            my = (int) rayY >> 6;
+            mp = my * mapX + mx;
+
+            if (mp < mapX * mapY && map[mp] == 1) {
+                depthOfField = 8;
+            } else {
+                rayX += xOffset;
+                rayY += yOffset;
+                depthOfField += 1;
+            }
+        }
+        glColor3f(0,1,0);
+        glLineWidth(1);
+        glBegin(GL_LINES);
+        glVertex2i(playerX, playerY);
+        glVertex2i(rayX, rayY);
+        glEnd();
+    }
 }
 
 void controls(unsigned char key, int x, int y) {
@@ -97,6 +143,7 @@ void display() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     drawMap2D();
 	drawPlayer();
+    drawRays3D();
 	glutSwapBuffers();
 }
 
